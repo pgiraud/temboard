@@ -4,8 +4,6 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-sudo: false
-
 install:
   - pip install flake8 flake8-diff
 
