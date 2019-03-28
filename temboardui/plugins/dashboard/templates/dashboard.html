@@ -15,8 +15,8 @@
     </strong>
   </div>
 </div>
-<div class="row mb-3">
-  <div class="col-xl-4 col-12 mb-3 mb-xl-0">
+<div class="h-50 row no-gutters">
+  <div class="col-4 mb-2">
     <div class="row">
       <div class="col-xl-12 col mb-xl-2">
         <div class="small text-muted text-center">
@@ -121,8 +121,8 @@
       </div>
     </div>
   </div>
-  <div class="col-xl-8 col-12">
-    <div class="h-50 pb-3">
+  <div class="col-8 mb-2">
+    <div class="h-50 pb-2">
       <div class="card h-100">
         <div class="text-center small p-0">
           <span class="chart-title">
@@ -154,7 +154,7 @@
     </div>
   </div>
 </div>
-<div class="row" id="divAlerts">
+<div class="row h-50 no-gutters" id="divAlerts">
   {% if 'monitoring' in [plugin.plugin_name for plugin in instance.plugins] %}
   <div class="col-8">
     <div class="text-center small">
@@ -183,55 +183,53 @@
       </template>
     </div>
   </div>
-  <div class="col-4">
+  <div class="col-4 d-flex flex-column h-100">
     <div class="text-center small">
       Last alerts
     </div>
-    <div class="small" style="max-height:300px; overflow-y:auto;">
-      <div class="text-center" v-if="!alerts">
-        <div class="progress"><div class="progress-bar progress-bar-striped" style="width: 100%;">Please wait ...</div></div>
-      </div>
-      <div class="text-muted" v-if="alerts.length == 0">
-        No alerts
-      </div>
-      <div v-cloak class="mb-0">
-        <template v-for="alert in alerts">
-          <div class="bg-light mb-1" :data-toggle-popover="alert.state == 'WARNING' || alert.state == 'CRITICAL'" data-trigger="hover">
-            <div class="p-1">
-              <div class="float-right text-muted text-right">
-                {{!moment(alert.datetime).fromNow()}}<br>
-              </div>
-              <div>
-                <a v-bind:href="'alerting/' + alert.name">
-                <span class="small text" v-bind:class="'text-' + alert.state.toLowerCase()">
-                  <i class="fa fa-square"></i>
-                </span>
-                <span>
-                  {{!alert.description}}
-                </span>
-                <span v-if="alert.key">
-                  -
-                  {{!alert.key}}
-                </span>
-                </a>
-              </div>
-              <div class="popover-content text-muted d-none" v-if="alert.state == 'WARNING' || alert.state == 'CRITICAL'">
-                {{!moment(alert.datetime).format()}}<br>
-                <span v-bind:class="'badge badge-' + alert.state.toLowerCase()">{{! alert.state }}</span>
-                <br>
-                <span class="font-weight-bold">
-                  {{!alert.value}}
-                </span>
-                <br>
-                Thresholds:
-                warning {{!alert.warning}}
-                /
-                critical {{!alert.critical}}
-              </div>
+    <div class="text-center" v-if="!alerts">
+      <div class="progress"><div class="progress-bar progress-bar-striped" style="width: 100%;">Please wait ...</div></div>
+    </div>
+    <div class="text-muted" v-if="alerts.length == 0">
+      No alerts
+    </div>
+    <div v-cloak class="mb-0" style="overflow-y: auto;">
+      <template v-for="alert in alerts">
+        <div class="bg-light mb-1" :data-toggle-popover="alert.state == 'WARNING' || alert.state == 'CRITICAL'" data-trigger="hover">
+          <div class="p-1">
+            <div class="float-right text-muted text-right">
+              {{!moment(alert.datetime).fromNow()}}<br>
+            </div>
+            <div>
+              <a v-bind:href="'alerting/' + alert.name">
+              <span class="small text" v-bind:class="'text-' + alert.state.toLowerCase()">
+                <i class="fa fa-square"></i>
+              </span>
+              <span>
+                {{!alert.description}}
+              </span>
+              <span v-if="alert.key">
+                -
+                {{!alert.key}}
+              </span>
+              </a>
+            </div>
+            <div class="popover-content text-muted d-none" v-if="alert.state == 'WARNING' || alert.state == 'CRITICAL'">
+              {{!moment(alert.datetime).format()}}<br>
+              <span v-bind:class="'badge badge-' + alert.state.toLowerCase()">{{! alert.state }}</span>
+              <br>
+              <span class="font-weight-bold">
+                {{!alert.value}}
+              </span>
+              <br>
+              Thresholds:
+              warning {{!alert.warning}}
+              /
+              critical {{!alert.critical}}
             </div>
           </div>
-        </template>
-      </div>
+        </div>
+      </template>
     </div>
     {% end %}
   </div>
