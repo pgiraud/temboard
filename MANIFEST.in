@@ -12,4 +12,6 @@ graft temboardui/plugins/monitoring/static
 graft temboardui/plugins/monitoring/templates
 graft temboardui/plugins/maintenance/static
 graft temboardui/plugins/maintenance/templates
+graft temboardui/plugins/slowqueries/static
+graft temboardui/plugins/slowqueries/templates
 graft share
