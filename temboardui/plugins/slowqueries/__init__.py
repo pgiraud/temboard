@@ -1,4 +1,5 @@
 import logging
+import tornado.web
 from os.path import realpath
 
 from temboardui.web import (
@@ -19,7 +20,11 @@ def configuration(config):
 
 
 def get_routes(config):
-    routes = blueprint.rules
+    routes = blueprint.rules + [
+        (r"/js/slowqueries/(.*)", tornado.web.StaticFileHandler, {
+            'path': plugin_path + "/static/js"
+        }),
+    ]
     return routes
 
 
