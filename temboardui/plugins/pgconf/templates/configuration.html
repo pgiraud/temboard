@@ -90,6 +90,7 @@
   </div>
 </div>
 {% end %}
+{% if configuration_categories %}
 <div class="row form-group">
   <div class="col-3 mr-auto">
     <form method="get" action="/server/{{instance.agent_address}}/{{instance.agent_port}}/pgconf/configuration" class="form" role="search">
@@ -134,6 +135,7 @@
     </script>
   </div>
 </div>
+{% end %}
 {% if len(data) == 0 %}
 <div class="row">
   <div class="col-12"><p>No results found...</p></div>
