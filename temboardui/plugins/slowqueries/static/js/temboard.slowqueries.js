@@ -5,13 +5,20 @@ $(function() {
   new Vue({
     el: '#app',
     data: {
-      slowQueries: []
+      slowQueries: [],
+      plan: null,
+      sql: null,
+      explainKey: 0
+    },
+    components: {
+      pgExplain: pgExplain
     },
     created: function() {
       this.fetchData();
     },
     methods: {
       fetchData: getData,
+      explain: explain
     }
   });
 
@@ -35,5 +42,13 @@ $(function() {
     $('pre code.sql').each(function(i, block) {
       hljs.highlightBlock(block);
     });
+  }
+
+  function explain(query) {
+    $('#explainModal').modal();
+    this.plan = query.plan;
+    this.sql = query.query;
+    // force rerender of the pgExplain component
+    this.explainKey += 1;
   }
 });

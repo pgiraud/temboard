@@ -349,6 +349,20 @@ table.table-query {
   padding-bottom: 0px;
 }
 
+.modal-fullscreen .modal-dialog {
+  width: 100%;
+  max-width: initial;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  .modal-content {
+    height: 100%;
+    min-height: 100%;
+    border-radius: 0;
+  }
+}
+
 .title-setting {
   font-weight: bold;
   color: #000;

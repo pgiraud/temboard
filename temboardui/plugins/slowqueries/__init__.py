@@ -26,6 +26,9 @@ def get_routes(config):
         (r"/js/slowqueries/(.*)", tornado.web.StaticFileHandler, {
             'path': plugin_path + "/static/js"
         }),
+        (r"/css/slowqueries/(.*)", tornado.web.StaticFileHandler, {
+            'path': plugin_path + "/static/css"
+        }),
     ]
     return routes
 
