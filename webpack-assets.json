@@ -1,0 +1,8 @@
+{
+  "activity": {
+    "js": "/js/build/activity-bundle-775fa51a12b1b1470be4.js"
+  },
+  "vendors~activity": {
+    "js": "/js/build/vendors~activity-bundle-775fa51a12b1b1470be4.js"
+  }
+}

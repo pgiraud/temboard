@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import functools
+import json
 import logging
 import os
 import urllib2
@@ -77,6 +78,22 @@ class Redirect(Response, Exception):
         )
 
 
+def load_assets(name, type='js'):
+    try:
+        fn = 'webpack-assets.json'
+        with open(fn) as f:
+            assets = json.load(f)
+    except Exception:
+        pass
+    ret = []
+    script = '<script src="{}"></script>'
+    for asset in assets:
+        if ('vendors' in asset) and (name in asset):
+            ret.append(script.format(assets[asset][type]))
+    ret.append(script.format(assets[name][type]))
+    return '\n'.join(ret)
+
+
 class TemplateRenderer(object):
     # Flask-like HTML render function, without thread local.
 
@@ -84,6 +101,7 @@ class TemplateRenderer(object):
         self.loader = TemplateLoader(path)
 
     def __call__(self, template, **data):
+        data['load_assets'] = load_assets
         return Response(
             body=self.loader.load(template).generate(**data),
             headers={'Content-Type': 'text/html; charset=UTF-8'},

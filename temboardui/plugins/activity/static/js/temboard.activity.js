@@ -1,3 +1,6 @@
+import dt from 'datatables.net';
+dt(window, $);
+
 $(function() {
   "use strict";
 
