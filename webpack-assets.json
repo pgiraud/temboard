@@ -1,8 +1,11 @@
 {
-  "activity": {
-    "js": "/js/build/activity-bundle-775fa51a12b1b1470be4.js"
+  "vendors~activity~notifications": {
+    "js": "/js/build/vendors~activity~notifications-bundle-0d4d86b21760d1fe9076.js"
   },
-  "vendors~activity": {
-    "js": "/js/build/vendors~activity-bundle-775fa51a12b1b1470be4.js"
+  "activity": {
+    "js": "/js/build/activity-bundle-7457eedda9c7bf913b44.js"
+  },
+  "notifications": {
+    "js": "/js/build/notifications-bundle-a90366e494da9421ab49.js"
   }
 }

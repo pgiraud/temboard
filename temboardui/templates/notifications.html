@@ -1,3 +1,4 @@
+{% autoescape None %}
 {% extends base.html %}
 
 {% block title %}[{{instance.hostname}}:{{instance.pg_port}}] - Notifications{% end %}
@@ -27,13 +28,5 @@
   </div>
 </div>
 </div> <!-- end limiter -->
-<script src="/js/datatables/datatables.min.js"></script>
-<script>
-$(document).ready(function() {
-  $('#tableNotifications').DataTable({
-    order: [[0, 'desc']],
-    pageLength: 25
-  });
-});
-</script>
+{{ load_assets('notifications') }}
 {% end %}

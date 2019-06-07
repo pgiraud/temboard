@@ -8,12 +8,13 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: {
-    activity: './temboardui/plugins/activity/static/js/temboard.activity.js'
+    activity: './temboardui/plugins/activity/static/js/temboard.activity.js',
+    notifications: './temboardui/static/js/temboard.notifications.js'
   },
   output: {
     path: path.resolve(__dirname, 'temboardui/static/js/build'),
     publicPath: '/js/build',
-    filename: '[name]-bundle-[hash].js'
+    filename: '[name]-bundle-[chunkhash].js'
   },
   module: {
     rules: [
