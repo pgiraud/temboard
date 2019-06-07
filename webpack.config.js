@@ -7,6 +7,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
     activity: './temboardui/plugins/activity/static/js/temboard.activity.js',
     notifications: './temboardui/static/js/temboard.notifications.js'
@@ -24,6 +25,10 @@ module.exports = {
         test: /datatables\.net.*/,
         loader: 'imports-loader?define=>false'
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      }
     ]
   },
   optimization: {

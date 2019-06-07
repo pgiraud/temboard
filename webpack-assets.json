@@ -1,11 +1,11 @@
 {
   "vendors~activity~notifications": {
-    "js": "/js/build/vendors~activity~notifications-bundle-0d4d86b21760d1fe9076.js"
+    "js": "/js/build/vendors~activity~notifications-bundle-84ab37d21451e8c0e632.js"
   },
   "activity": {
-    "js": "/js/build/activity-bundle-7457eedda9c7bf913b44.js"
+    "js": "/js/build/activity-bundle-08053c4bcc5a2f131e0a.js"
   },
   "notifications": {
-    "js": "/js/build/notifications-bundle-a90366e494da9421ab49.js"
+    "js": "/js/build/notifications-bundle-f3eba01e2538ba3e5463.js"
   }
 }
