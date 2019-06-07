@@ -1,11 +1,23 @@
 {
-  "vendors~activity~notifications": {
-    "js": "/js/build/vendors~activity~notifications-bundle-84ab37d21451e8c0e632.js"
+  "vendors~activity~notifications~settings.group~settings.user": {
+    "js": "/js/build/vendors~activity~notifications~settings.group~settings.user-bundle-445b0a61b3b5e6e2ec89.js"
   },
   "activity": {
-    "js": "/js/build/activity-bundle-08053c4bcc5a2f131e0a.js"
+    "js": "/js/build/activity-bundle-b2992c40c811002ca53a.js"
   },
   "notifications": {
-    "js": "/js/build/notifications-bundle-f3eba01e2538ba3e5463.js"
+    "js": "/js/build/notifications-bundle-adeca93b6b30113c3774.js"
+  },
+  "settings.group": {
+    "js": "/js/build/settings.group-bundle-f399b565318c3caf976e.js"
+  },
+  "settings.instance": {
+    "js": "/js/build/settings.instance-bundle-61a45cff25dcbe6b569e.js"
+  },
+  "settings.user": {
+    "js": "/js/build/settings.user-bundle-559719b39c7846b3731e.js"
+  },
+  "vendors~activity~notifications~settings.group~settings.instance~settings.user": {
+    "js": "/js/build/vendors~activity~notifications~settings.group~settings.instance~settings.user-bundle-6cb4261694d7c56fd835.js"
   }
 }

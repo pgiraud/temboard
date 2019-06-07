@@ -10,7 +10,10 @@ module.exports = {
   mode: 'production',
   entry: {
     activity: './temboardui/plugins/activity/static/js/temboard.activity.js',
-    notifications: './temboardui/static/js/temboard.notifications.js'
+    notifications: './temboardui/static/js/temboard.notifications.js',
+    'settings.group': './temboardui/static/js/temboard.settings.group.js',
+    'settings.user': './temboardui/static/js/temboard.settings.user.js',
+    'settings.instance': './temboardui/static/js/temboard.settings.instance.js',
   },
   output: {
     path: path.resolve(__dirname, 'temboardui/static/js/build'),
