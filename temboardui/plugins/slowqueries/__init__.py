@@ -12,6 +12,7 @@ from temboardui.web import (
 
 blueprint = Blueprint()
 blueprint.generic_proxy(r"/slowqueries")
+blueprint.generic_proxy(r"/slowqueries/explain", methods=['POST'])
 logger = logging.getLogger(__name__)
 plugin_path = realpath(__file__ + '/..')
 render_template = TemplateRenderer(plugin_path + '/templates')
