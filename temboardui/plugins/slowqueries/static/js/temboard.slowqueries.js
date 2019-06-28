@@ -18,7 +18,8 @@ $(function() {
     },
     methods: {
       fetchData: getData,
-      explain: explain
+      explain: explain,
+      explainAnalyze: explainAnalyze
     }
   });
 
@@ -50,5 +51,27 @@ $(function() {
     this.sql = query.query;
     // force rerender of the pgExplain component
     this.explainKey += 1;
+  }
+
+  function explainAnalyze(query) {
+    $.ajax({
+      url: apiUrl + '/explain',
+      type: 'POST',
+      data: JSON.stringify({
+        sql: query.query,
+        format: 'json'
+      }),
+      contentType: "application/json",
+      success: (function (data) {
+        $('#explainModal').modal();
+        this.plan = data;
+        this.sql = query.query;
+        // force rerender of the pgExplain component
+        this.explainKey += 1;
+      }).bind(this),
+      error: function(xhr) {
+        console.log(xhr);
+      }
+    })
   }
 });

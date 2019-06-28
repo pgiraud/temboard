@@ -38,7 +38,7 @@
       </th>
     </thead>
     <tbody>
-      <tr v-for="query in slowQueries" v-on:click="explain(query)">
+      <tr v-for="query in slowQueries">
         <td>
           {{!query.username}}
         </td>
@@ -65,6 +65,16 @@
         </td>
         <td class="query" width="50%">
           <pre><code class="sql">{{! query.query }}</code></pre>
+        </td>
+        <td>
+          <a v-on:click.prevent="explain(query)" title="Show execution plan" href>
+            Explain
+          </a>
+        </td>
+        <td>
+          <a v-on:click.prevent="explainAnalyze(query)" title="Show execution plan with analyze" href>
+            Analyze
+          </a>
         </td>
       </tr>
     </tbody>
