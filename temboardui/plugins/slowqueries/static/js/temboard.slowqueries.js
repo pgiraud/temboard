@@ -86,6 +86,14 @@ $(function() {
     $('pre code.sql').each(function(i, block) {
       hljs.highlightBlock(block);
     });
+
+    $('[data-toggle="popover"]').popover({
+      html: true,
+      content: function() {
+        return $(this).find('pre').html();
+      },
+      template: '<div class="popover sql" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
+    });
   }
 
   function explain(query) {

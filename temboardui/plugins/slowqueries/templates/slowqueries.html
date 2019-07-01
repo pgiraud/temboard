@@ -21,16 +21,16 @@
       <th>
         dbname
       </th>
-      <th>
+      <th class="text-right">
         ntuples
       </th>
       <th>
         datetime
       </th>
-      <th>
-        temp_blks_written
+      <th title="temp_blks_written" class="text-right">
+        tbw
       </th>
-      <th>
+      <th class="text-right">
         hitratio
       </th>
       <th class="text-right">
@@ -39,6 +39,8 @@
       <th>
         query
       </th>
+      <th></th>
+      <th></th>
     </thead>
     <tbody>
       <tr v-for="query in slowQueries">
@@ -51,22 +53,22 @@
         <td>
           {{!query.dbname}}
         </td>
-        <td>
+        <td class="text-right">
           {{!query.ntuples}}
         </td>
         <td>
           {{!moment(query.datetime).format()}}<br>
         </td>
-        <td>
+        <td class="text-right">
           {{!query.temp_blks_written}}
         </td>
-        <td>
+        <td class="text-right">
           {{!query.hitratio}}
         </td>
         <td class="text-right">
           {{!moment.duration(query.duration).format("w[w] d[d] h[h] m[m] s[s] SSS[ms]", { largest: 2 })}}
         </td>
-        <td class="query" width="50%">
+        <td class="query" width="50%" data-toggle="popover" data-trigger="hover" >
           <pre><code class="sql">{{! query.query }}</code></pre>
         </td>
         <td>
