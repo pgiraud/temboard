@@ -19,7 +19,10 @@ $(function() {
       to: null,
       fromDate: null,
       toDate: null,
-      moment: moment
+      moment: moment,
+      page: 1,
+      total: null,
+      perPage: null,
     },
     components: {
       pev2: pev2
@@ -32,6 +35,9 @@ $(function() {
     computed: {
       fromTo: function() {
         return this.from, this.to, new Date();
+      },
+      pages: function() {
+        return Array.apply(null, {length: Math.ceil(this.total / this.perPage)}).map(Number.call, Number)
       }
     },
     watch: {
@@ -41,6 +47,12 @@ $(function() {
           end: '' + v.to
         })});
       },
+      page: function() {
+        this.$router.replace({ query: _.assign({}, this.$route.query, {
+          page: this.page
+        })});
+        getData.call(this);
+      }
     }
   });
 
@@ -62,13 +74,16 @@ $(function() {
       url: apiUrl,
       data: {
         start: timestampToIsoDate(startDate),
-        end: timestampToIsoDate(endDate)
+        end: timestampToIsoDate(endDate),
+        page: this.page
       },
       type: 'GET',
       async: true,
       contentType: "application/json",
       success: (function (data) {
-        this.slowQueries = data;
+        this.slowQueries = data.queries;
+        this.total = data.total;
+        this.perPage = data.per_page;
         window.setTimeout(postCreated.bind(this), 1);
       }).bind(this),
       error: function(xhr) {
@@ -129,6 +144,7 @@ $(function() {
   function onPickerUpdate(from, to) {
     this.from = from;
     this.to = to;
+    this.page = 1;
     refreshDates();
   }
 

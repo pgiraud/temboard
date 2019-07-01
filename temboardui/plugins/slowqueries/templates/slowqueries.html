@@ -84,6 +84,23 @@
       </tr>
     </tbody>
   </table>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" aria-label="First" v-on:click.prevent="page = 1">
+          <span aria-hidden="true">⏮</span>
+        </a>
+      </li>
+      <li :class="['page-item', {'active': page_ == page - 1}]" v-for="page_ in pages">
+        <a class="page-link" href v-on:click.prevent="page = page_ + 1">{{! page_ }}</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" aria-label="Last" v-on:click.prevent="page = pages[pages.length - 1] + 1">
+          <span aria-hidden="true">⏭</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
   <div id="explainModal" class="modal modal-fullscreen" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">

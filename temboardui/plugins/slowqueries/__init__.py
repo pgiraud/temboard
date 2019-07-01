@@ -11,6 +11,8 @@ from temboardui.web import (
     jsonify,
 )
 
+from .model.orm import SlowQueries
+
 
 blueprint = Blueprint()
 blueprint.generic_proxy(r"/slowqueries")
@@ -65,21 +67,33 @@ def slowqueries(request):
 @blueprint.instance_route(r'/slowqueries.json')
 def slowqueries_json(request):
     start, end = parse_start_end(request)
-    sql = """
-        SELECT * FROM slowqueries.slowqueries
-        WHERE datetime >= %(start)s AND datetime <= %(end)s
+
+    query = request.db_session.query(SlowQueries) \
+        .filter(SlowQueries.datetime >= start) \
+        .filter(SlowQueries.datetime <= end)
+    res = paginate(request, query)
+    return jsonify(res)
+
+
+# inspired by FlaskSQLAlchemy BaseQuery::paginate
+def paginate(request, query):
     """
-    # res = cur.execute(sql)
-    session = request.db_session
-    cur = session.connection().connection.cursor()
-    sql = cur.mogrify(sql, dict(start=start, end=end))
-    rows = session.execute(sql).fetchall()
-    ret = []
-    for row in rows:
-        result = dict(row)
-        result['datetime'] = result['datetime'].isoformat()
-        ret.append(result)
-    return jsonify(ret)
+    """
+    page = int(request.handler.get_argument('page', default=1))
+    per_page = 5
+    items = query.limit(per_page).offset((page - 1) * per_page)
+    items = [(dict(row.as_dict())) for row in items.all()]
+
+    if page == 1 and len(items) < per_page:
+        total = len(items)
+    else:
+        total = query.order_by(None).count()
+    return {
+        'total': total,
+        'per_page': per_page,
+        'page': page,
+        'queries': items,
+    }
 
 
 def parse_start_end(request):
