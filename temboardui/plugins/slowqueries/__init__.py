@@ -1,12 +1,14 @@
 import logging
 import tornado.web
 from os.path import realpath
+from dateutil import parser as parse_datetime
 
 from temboardui.web import (
     Blueprint,
     HTTPError,
     Redirect,
     TemplateRenderer,
+    jsonify,
 )
 
 
@@ -38,6 +40,14 @@ def get_routes(config):
 def slowqueries(request):
     request.instance.check_active_plugin(__name__)
 
+    # Retrieve slowqueries from instance
+    url = '/slowqueries'
+    slowqueries = request.instance.get(url)
+    insert_slowqueries(request.db_session, slowqueries)
+
+    url = '/slowqueries/reset'
+    request.instance.get(url)
+
     try:
         agent_username = request.instance.get_profile()['username']
     except Exception:
@@ -50,6 +60,75 @@ def slowqueries(request):
         agent_username=agent_username,
         plugin=__name__,
     )
+
+
+@blueprint.instance_route(r'/slowqueries.json')
+def slowqueries_json(request):
+    start, end = parse_start_end(request)
+    sql = """
+        SELECT * FROM slowqueries.slowqueries
+        WHERE datetime >= %(start)s AND datetime <= %(end)s
+    """
+    # res = cur.execute(sql)
+    session = request.db_session
+    cur = session.connection().connection.cursor()
+    sql = cur.mogrify(sql, dict(start=start, end=end))
+    rows = session.execute(sql).fetchall()
+    ret = []
+    for row in rows:
+        result = dict(row)
+        result['datetime'] = result['datetime'].isoformat()
+        ret.append(result)
+    return jsonify(ret)
+
+
+def parse_start_end(request):
+    start = request.handler.get_argument('start', default=None)
+    end = request.handler.get_argument('end', default=None)
+    try:
+        if start:
+            start = parse_datetime.parse(start)
+        if end:
+            end = parse_datetime.parse(end)
+    except ValueError:
+        raise HTTPError(406, 'Datetime not valid.')
+
+    return start, end
+
+
+def insert_slowqueries(session, slowqueries):
+    cur = session.connection().connection.cursor()
+    for slowquery in slowqueries:
+        print(slowquery['datetime'])
+        try:
+            # Insert data
+            query = """
+                INSERT INTO slowqueries.slowqueries
+                (datetime, duration, username, appname, dbname,
+                 temp_blks_written, hitratio, ntuples, query, plan)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cur.execute(
+                query,
+                (
+                    slowquery['datetime'],
+                    slowquery['duration'],
+                    slowquery['username'],
+                    slowquery['appname'],
+                    slowquery['dbname'],
+                    slowquery['temp_blks_written'],
+                    slowquery['hitratio'],
+                    slowquery['ntuples'],
+                    slowquery['query'],
+                    slowquery['plan'],
+                )
+            )
+            session.connection().connection.commit()
+        except Exception as e:
+            logger.info("Slowquery data not inserted")
+            logger.debug(slowquery)
+            logger.exception(str(e))
+            session.connection().connection.rollback()
 
 
 @blueprint.instance_route(r"/slowqueries/settings",
