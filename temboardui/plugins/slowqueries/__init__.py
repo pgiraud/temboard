@@ -43,7 +43,7 @@ def slowqueries(request):
     # Retrieve slowqueries from instance
     url = '/slowqueries'
     slowqueries = request.instance.get(url)
-    insert_slowqueries(request.db_session, slowqueries)
+    insert_slowqueries(request.db_session, slowqueries, request.instance)
 
     url = '/slowqueries/reset'
     request.instance.get(url)
@@ -96,21 +96,24 @@ def parse_start_end(request):
     return start, end
 
 
-def insert_slowqueries(session, slowqueries):
+def insert_slowqueries(session, slowqueries, instance):
     cur = session.connection().connection.cursor()
     for slowquery in slowqueries:
         print(slowquery['datetime'])
         try:
             # Insert data
             query = """
-                INSERT INTO slowqueries.slowqueries
-                (datetime, duration, username, appname, dbname,
-                 temp_blks_written, hitratio, ntuples, query, plan)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO slowqueries.slowqueries_insert_table
+                (agent_address, agent_port, datetime, duration, username,
+                 appname, dbname, temp_blks_written, hitratio, ntuples, query,
+                 plan)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cur.execute(
                 query,
                 (
+                    instance.agent_address,
+                    instance.agent_port,
                     slowquery['datetime'],
                     slowquery['duration'],
                     slowquery['username'],
