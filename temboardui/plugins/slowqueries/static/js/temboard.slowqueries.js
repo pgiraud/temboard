@@ -22,7 +22,7 @@ $(function() {
       moment: moment
     },
     components: {
-      pgExplain: pgExplain
+      pev2: pev2
     },
     methods: {
       explain: explain,
