@@ -1,8 +1,12 @@
 import logging
 import tornado.web
-from os.path import realpath
+from os.path import realpath, join as joinpath
 from dateutil import parser as parse_datetime
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+
+from temboardui.toolkit import taskmanager
 from temboardui.web import (
     Blueprint,
     HTTPError,
@@ -18,6 +22,7 @@ blueprint = Blueprint()
 blueprint.generic_proxy(r"/slowqueries")
 blueprint.generic_proxy(r"/slowqueries/explain", methods=['POST'])
 logger = logging.getLogger(__name__)
+workers = taskmanager.WorkerSet()
 plugin_path = realpath(__file__ + '/..')
 render_template = TemplateRenderer(plugin_path + '/templates')
 
@@ -113,7 +118,6 @@ def parse_start_end(request):
 def insert_slowqueries(session, slowqueries, instance):
     cur = session.connection().connection.cursor()
     for slowquery in slowqueries:
-        print(slowquery['datetime'])
         try:
             # Insert data
             query = """
@@ -191,4 +195,60 @@ def settings(request):
         configuration_categories=False,
         configuration_status=configuration_status,
         data=settings,
+    )
+
+
+@workers.register(pool_size=1)
+def schedule_slowqueries_worker(app):
+    # Schedule real work for each instance
+    dbconf = app.config.repository
+    dburi = 'postgresql://{user}:{pwd}@:{p}/{db}?host={h}'.format(
+                user=dbconf['user'],
+                pwd=dbconf['password'],
+                h=dbconf['host'],
+                p=dbconf['port'],
+                db=dbconf['dbname']
+            )
+    engine = create_engine(dburi)
+    session_factory = sessionmaker(bind=engine)
+    Session = scoped_session(session_factory)
+    worker_session = Session()
+    results = worker_session.execute(
+        """
+SELECT i.agent_address, i.agent_port
+FROM application.plugins AS p
+JOIN application.instances AS i ON (p.agent_address = i.agent_address
+                                    AND p.agent_port = i.agent_port)
+WHERE plugin_name = 'slowqueries';
+        """
+    )
+    for result in results:
+        taskmanager.schedule_task(
+            'slowqueries_worker',
+            id='slowqueries_%s_%s' % (result['agent_address'],
+                                      result['agent_port']),
+            listener_addr=joinpath(app.config.temboard.home, '.tm.socket'),
+            options={
+                'agent_address': result['agent_address'],
+                'agent_port': result['agent_port'],
+            },
+            expire=0,
+        )
+    worker_session.close()
+
+
+@workers.register(pool_size=10)
+def slowqueries_worker(app, agent_address, agent_port):
+    # Let's do the real work here
+    logger.info("agent_address=%s" % agent_address)
+    logger.info("agent_port=%s" % agent_port)
+
+
+@taskmanager.bootstrap()
+def slowqueries_bootstrap(context):
+    yield taskmanager.Task(
+            worker_name='schedule_slowqueries_worker',
+            id='scheduler_slowqueries_worker',
+            redo_interval=300,
+            options={},
     )

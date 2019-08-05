@@ -22,6 +22,7 @@ Requires:      python-tornado >= 3.2
 Requires:      python-sqlalchemy >= 0.9.8
 Requires:      python-psycopg2
 Requires:      python-dateutil >= 1.5
+Requires:      python2-requests <= 2.6.0
 Requires:      openssl
 Requires:      mailcap
 

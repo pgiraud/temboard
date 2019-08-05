@@ -22,7 +22,7 @@ SETUP_KWARGS = dict(
     name='temboard',
     version=__version__,  # noqa, imported by execfile.
     description='temBoard User Interface.',
-    author='Julien Tachoires, Étienne BERSAC',
+    author='Pierre Giraud, Julien Tachoires, Étienne Bersac',
     license='PostgreSQL',
     install_requires=[
         'futures',
@@ -34,6 +34,7 @@ SETUP_KWARGS = dict(
         # documentation.
         'sqlalchemy>=0.9.8',
         'tornado>=3.2,<' + BLEEDING_EDGE_TORNADO,
+        'requests<=2.6.0',
     ],
     include_package_data=True,
     zip_safe=False,
