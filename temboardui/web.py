@@ -322,7 +322,7 @@ class InstanceHelper(object):
 
         logger.debug("Proxying %s %s.", method, url)
         try:
-            body = temboard_request(
+            res = temboard_request(
                 self.request.config.temboard.ssl_ca_cert_file,
                 method=method,
                 url=url,
@@ -339,7 +339,7 @@ class InstanceHelper(object):
         except Exception as e:
             logger.error("Proxied request failed: %s", e)
             raise HTTPError(500)
-        return json_decode(body)
+        return json_decode(res.content)
 
     def get(self, *args, **kwargs):
         kwargs['method'] = 'GET'
