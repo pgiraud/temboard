@@ -116,9 +116,7 @@ def history_tables_worker(app):
 @workers.register(pool_size=10)
 def check_data_worker(app, host_id, instance_id, data):
     # Worker in charge of checking preprocessed monitoring values
-    engine = worker_engine(app.config.repository)
-    session_factory = sessionmaker(bind=engine)
-    Session = scoped_session(session_factory)
+    Session = scoped_session(sessionmaker(bind=app.webapp.engine))
     worker_session = Session()
 
     check_preprocessed_data(
@@ -231,9 +229,7 @@ def notify_state_change(app, check_id, key, value, state, prev_state):
         return
 
     # Worker in charge of sending notifications
-    engine = worker_engine(app.config.repository)
-    session_factory = sessionmaker(bind=engine)
-    Session = scoped_session(session_factory)
+    Session = scoped_session(sessionmaker(bind=app.webapp.engine))
     worker_session = Session()
 
     check = worker_session.query(Check).filter(
@@ -313,36 +309,39 @@ def schedule_collector(app):
     logger.setLevel(app.config.logging.level)
     logger.info("Starting collector scheduler worker.")
 
-    engine = worker_engine(app.config.repository)
-    with engine.connect() as conn:
-        # Get the list of agents
-        res = conn.execute(
-            "SELECT agent_address, agent_port, agent_key "
-            "FROM application.instances ORDER BY 1, 2"
+    Session = scoped_session(sessionmaker(bind=app.webapp.engine))
+    worker_session = Session()
+
+    # Get the list of agents
+    res = worker_session.execute(
+        "SELECT agent_address, agent_port, agent_key "
+        "FROM application.instances ORDER BY 1, 2"
+    )
+
+    for agent_address, agent_port, agent_key in res.fetchall():
+        # For each registered agent, let's start a new data collector
+
+        # Build a unique Task id based on agent address and port
+        task_id = hashlib.md5(
+            "%s:%s" % (agent_address, agent_port)
+        ).hexdigest()[:8]
+
+        taskmanager.schedule_task(
+            'collector',
+            listener_addr=os.path.join(
+                app.config.temboard.home, '.tm.socket'
+            ),
+            id=task_id,
+            options=dict(
+                address=agent_address,
+                port=agent_port,
+                key=agent_key,
+            ),
+            expire=0,
         )
 
-        for agent_address, agent_port, agent_key in res.fetchall():
-            # For each registered agent, let's start a new data collector
-
-            # Build a unique Task id based on agent address and port
-            task_id = hashlib.md5(
-                "%s:%s" % (agent_address, agent_port)
-            ).hexdigest()[:8]
-
-            taskmanager.schedule_task(
-                'collector',
-                listener_addr=os.path.join(
-                    app.config.temboard.home, '.tm.socket'
-                ),
-                id=task_id,
-                options=dict(
-                    address=agent_address,
-                    port=agent_port,
-                    key=agent_key,
-                ),
-                expire=0,
-            )
-
+    worker_session.commit()
+    worker_session.close()
     logger.info("End of collector scheduler worker.")
 
 
@@ -373,9 +372,7 @@ def collector(app, address, port, key):
     logger.debug(discover_data)
 
     # Start new ORM DB session
-    engine = worker_engine(app.config.repository)
-    session_factory = sessionmaker(bind=engine)
-    Session = scoped_session(session_factory)
+    Session = scoped_session(sessionmaker(bind=app.webapp.engine))
     worker_session = Session()
 
     host_id = instance_id = None

@@ -759,9 +759,7 @@ def add_statement(session, instance, data):
 
 @workers.register(pool_size=1)
 def pull_data_worker(app):
-    engine = worker_engine(app.config.repository)
-    session_factory = sessionmaker(bind=engine)
-    Session = scoped_session(session_factory)
+    Session = scoped_session(sessionmaker(bind=app.webapp.engine))
     worker_session = Session()
     instances = worker_session.query(Instances)
 
