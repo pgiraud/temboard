@@ -872,6 +872,7 @@ def get_metric_data_csv(session, metric_name, start, end, host_id=None,
     query = cur.mogrify(q_tpl, dict(host_id=host_id, instance_id=instance_id,
                                     start=start, end=end, key=key,
                                     tablename=AsIs(tablename)))
+    query = query.decode("utf-8")
     # Retreive data using copy_expert()
     cur.copy_expert("COPY(" + query + ") TO STDOUT WITH CSV HEADER",
                     data_buffer)
