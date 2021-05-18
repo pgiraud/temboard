@@ -1,6 +1,11 @@
 from mock import Mock
 
 import pytest
+import sys
+
+
+python2_only = pytest.mark.skipif(sys.version_info > (3, 0),
+                                  reason="Requires Python2")
 
 
 @pytest.fixture
@@ -66,6 +71,7 @@ def test_redirect_response_host():
     assert 'https://temboard.lan/home' == response.headers['Location']
 
 
+@python2_only
 def test_easy_handshake_ok(ioloop_mock):
     from temboardui.autossl import (
         EasySSLIOStream,
@@ -79,6 +85,7 @@ def test_easy_handshake_ok(ioloop_mock):
     assert stream._ssl_accepting is False
 
 
+@python2_only
 def test_easy_handshake_ssl_errors(ioloop_mock):
     from tornado.concurrent import Future
     from temboardui.autossl import (
@@ -141,6 +148,7 @@ def test_easy_handshake_ssl_errors(ioloop_mock):
         fut.result()
 
 
+@python2_only
 def test_easy_handshake_other_errors(ioloop_mock):
     from temboardui.autossl import (
         EasySSLIOStream,
