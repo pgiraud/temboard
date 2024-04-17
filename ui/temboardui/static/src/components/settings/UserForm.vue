@@ -1,33 +1,25 @@
 <script setup>
-import { nextTick, onMounted, onUpdated, ref, watch } from "vue";
+import { nextTick, onMounted, onUpdated, ref } from "vue";
 
 const props = defineProps([
   "waiting", // Whether parent is interacting with server.
-  "groups"
+  "groups",
 ]);
 
 const root = ref(null);
 
-watch(() => props.groups, () => {
-  console.log('Watch groups:', props.groups);
+onMounted(() => {
   $('[data-toggle="tooltip"]', root.value.$el).tooltip();
+});
+
+onUpdated(() => {
   if (!$("#selectGroups").data("multiselect")) {
     nextTick(setup_multiselects);
   }
+  if ($("#selectGroups").data("multiselect")) {
+    $("#selectGroups").multiselect(props.waiting ? "disable" : "enable");
+  }
 });
-
-// onMounted(() => {
-//   $('[data-toggle="tooltip"]', root.value.$el).tooltip();
-//   if (!$("#selectGroups").data("multiselect")) {
-//     nextTick(setup_multiselects);
-//   }
-// });
-
-// onUpdated(() => {
-//   if ($("#selectGroups").data("multiselect")) {
-//     $("#selectGroups").multiselect(props.waiting ? "disable" : "enable");
-//   }
-// });
 
 function setup_multiselects() {
   // jQuery multiselect plugin must be called once Vue template is rendered.
@@ -68,7 +60,7 @@ function submit() {
     is_active: $("#switchActive").is(":checked"),
     is_admin: $("#switchAdmin").is(":checked"),
   };
-  console.log("SUBMIT")
+  console.log("SUBMIT");
   emit("submit", data);
 }
 
